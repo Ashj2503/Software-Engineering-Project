@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Trading Platform</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        label, input, button {
+            display: block;
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <label for="username">Username:</label>
+        <input type="text" id="username" placeholder="Enter your username">
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" placeholder="Enter your password">
+
+        <button onclick="register()">Register</button>
+        <button onclick="login()">Login</button>
+
+        <hr>
+
+        <label for="symbol">Stock Symbol:</label>
+        <input type="text" id="symbol" placeholder="Enter stock symbol">
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" placeholder="Enter quantity">
+
+        <button onclick="addToPortfolio()">Add to Portfolio</button>
+
+        <hr>
+        <form action="index.html">
+        <button id="index" onclick="index.html">Stock Mapping</button>
+    </form>
+    </div>
+
+    <script src="server.js"></script>
+    <script>
+        const serverUrl = 'http://localhost:3000'; 
+
+        async function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${serverUrl}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                alert(await response.text());
+            } catch (error) {
+                console.error('Error registering user:', error);
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${serverUrl}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const data = await response.json();
+                alert(`Login successful!\nToken: ${data.token}`);
+            } catch (error) {
+                console.error('Error logging in:', error);
+            }
+        }
+
+        async function addToPortfolio() {
+            const symbol = document.getElementById('symbol').value;
+            const quantity = document.getElementById('quantity').value;
+
+            try {
+                const token = prompt('Enter your JWT token:');
+                const response = await fetch(`${serverUrl}/portfolio`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token,
+                    },
+                    body: JSON.stringify({ symbol, quantity }),
+                });
+
+                alert(await response.text());
+            } catch (error) {
+                console.error('Error adding to portfolio:', error);
+            }
+        }
+
+        async function fetchPortfolio() {
+            const token = prompt('Enter your JWT token:');
+
+            try {
+                const response = await fetch(`${serverUrl}/portfolio`, {
+                    headers: {
+                        'Authorization': token,
+                    },
+                });
+
+                const data = await response.json();
+                const portfolioList = document.getElementById('portfolio');
+
+                portfolioList.innerHTML = '';
+
+                data.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${item.symbol} - ${item.quantity}`;
+                    portfolioList.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error('Error fetching portfolio:', error);
+            }
+        }
+    </script>
+</body>
+</html>
