@@ -42,17 +42,31 @@
     </style>
 </head>
 <body>
+    
+
     <div class="container">
-        <label for="username">Username:</label>
-        <input type="text" id="username" placeholder="Enter your username">
-
-        <label for="password">Password:</label>
-        <input type="password" id="password" placeholder="Enter your password">
-
-        <button onclick="register()">Register</button>
-        <button onclick="login()">Login</button>
+            <div>
+                <label>Username:</label>
+                <input type="text" size="40">
+            </div>
+            <div>
+                <label>Pin-Code</label>
+                <input type="password"
+                       id="number" size="40">
+                <span id="error"></span>
+            </div>
+            <button type="submit" 
+                    onclick="errorMessage()">
+                Login
+            </button>
+        
+        
+         <button onclick="register()">Register</button>
+         <p>For new users only</p>
+        
 
         <hr>
+        <h1>Your Portfolio</h1>
 
         <label for="symbol">Stock Symbol:</label>
         <input type="text" id="symbol" placeholder="Enter stock symbol">
@@ -89,6 +103,19 @@
                 console.error('Error registering user:', error);
             }
         }
+
+        function errorMessage() {
+        var error = document.getElementById("error")
+        if (isNaN(document.getElementById("number").value)) 
+        {
+             
+            
+            error.textContent = "Invalid Password"
+            error.style.color = "red"
+        } else {
+            error.textContent = ""
+        }
+    }
 
         async function login() {
             const username = document.getElementById('username').value;
